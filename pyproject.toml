@@ -1,0 +1,61 @@
+[project]
+name = "revenue-monitor"
+version = "0.1.0"
+description = "SaaS revenue analytics on Stripe-shaped billing data. DuckDB, dbt, MetricForge, Evidence."
+requires-python = ">=3.12"
+dependencies = [
+    "dbt-core>=1.10",
+    "dbt-duckdb>=1.9",
+    "duckdb>=1.4",
+    "metricforge @ git+https://github.com/m4dd0ck/metricforge",
+    "pydantic>=2.9",
+    "pydantic-settings>=2.5",
+    "rich>=13",
+    "structlog>=24",
+    "typer>=0.12",
+]
+
+[project.optional-dependencies]
+stripe = ["stripe>=12"]
+
+[project.scripts]
+revmon = "revenue_monitor.cli:app"
+
+[dependency-groups]
+dev = [
+    "mypy>=1.13",
+    "pytest>=8",
+    "pytest-cov>=6",
+    "ruff>=0.8",
+    "stripe>=12",
+]
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-v -m 'not integration'"
+markers = ["integration: runs the full generate → load → dbt pipeline"]
+
+[tool.mypy]
+python_version = "3.12"
+strict = true
+
+[[tool.mypy.overrides]]
+module = ["metricforge.*"]
+ignore_missing_imports = true
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.metadata]
+allow-direct-references = true
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/revenue_monitor"]
