@@ -35,6 +35,8 @@ def add_months(ts: int, months: int) -> int:
     Days past the 28th clamp to the 28th so every month has the anniversary, which is how
     billing anchors behave for short months.
     """
+    if months == 0:
+        return ts
     moment = datetime.fromtimestamp(ts, UTC)
     month_index = moment.month - 1 + months
     shifted = moment.replace(
@@ -67,9 +69,15 @@ class SubscriptionState:
 
     def __init__(self, recorder: Recorder, data: dict[str, Any]) -> None:
         self._recorder = recorder
+        self._last_event_at: int = data["created"]
         self.data = data
         recorder.subscriptions.append(self)
         self._emit("customer.subscription.created", data["created"], None)
+
+    @property
+    def last_event_at(self) -> int:
+        """Time of the most recent change; later changes must come after it."""
+        return self._last_event_at
 
     @property
     def id(self) -> str:
@@ -146,6 +154,9 @@ class SubscriptionState:
         self._emit("customer.subscription.updated", ts, previous)
 
     def _emit(self, event_type: str, ts: int, previous: dict[str, Any] | None) -> None:
+        if ts < self._last_event_at:
+            raise ValueError(f"{self.id}: event at {ts} precedes previous event")
+        self._last_event_at = ts
         self._recorder.events.append(
             {
                 "id": self._recorder.ids.new("evt"),
