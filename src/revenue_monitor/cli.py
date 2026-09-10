@@ -10,6 +10,7 @@ from rich.table import Table
 from revenue_monitor.config import Settings
 from revenue_monitor.generator import generate as run_generator
 from revenue_monitor.loader import load_raw
+from revenue_monitor.stripe_source import LiveKeyError, extract, require_test_key
 
 app = typer.Typer(
     help="SaaS revenue analytics on Stripe-shaped billing data.", no_args_is_help=True
@@ -53,3 +54,22 @@ def load() -> None:
     settings = Settings()
     counts = load_raw(settings.raw_dir, settings.db_path)
     print_counts("Loaded", counts, str(settings.db_path))
+
+
+@app.command()
+def stripe() -> None:
+    """Pull objects from a Stripe test-mode account (needs STRIPE_API_KEY)."""
+    settings = Settings()
+    if settings.stripe_api_key is None:
+        raise typer.BadParameter("Set STRIPE_API_KEY to a test-mode key (sk_test_...)")
+    api_key = settings.stripe_api_key.get_secret_value()
+    try:
+        require_test_key(api_key)
+    except LiveKeyError as error:
+        raise typer.BadParameter(str(error)) from error
+    try:
+        import stripe as stripe_sdk
+    except ImportError as error:
+        raise typer.BadParameter("Install the extra: uv sync --extra stripe") from error
+    counts = extract(stripe_sdk.StripeClient(api_key).v1, settings.raw_dir)
+    print_counts("Pulled from Stripe", counts, str(settings.raw_dir))
