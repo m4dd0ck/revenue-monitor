@@ -1,0 +1,7 @@
+revenue_monitor:
+  target: dev
+  outputs:
+    dev:
+      type: duckdb
+      path: "{{ env_var('REVMON_DB_PATH', 'data/revenue_monitor.duckdb') }}"
+      threads: 4

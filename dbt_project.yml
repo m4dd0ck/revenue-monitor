@@ -1,0 +1,32 @@
+name: revenue_monitor
+version: '0.1.0'
+config-version: 2
+
+profile: revenue_monitor
+
+model-paths: ["models"]
+macro-paths: ["macros"]
+# Reason: pytest owns tests/, so dbt singular tests live in data_tests/
+test-paths: ["data_tests"]
+
+clean-targets:
+  - "target"
+  - "dbt_packages"
+
+models:
+  revenue_monitor:
+    staging:
+      +materialized: view
+      +schema: staging
+    intermediate:
+      +materialized: view
+      +schema: intermediate
+    dimensions:
+      +materialized: table
+      +schema: dimensions
+    facts:
+      +materialized: table
+      +schema: facts
+    marts:
+      +materialized: table
+      +schema: marts
