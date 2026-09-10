@@ -34,8 +34,8 @@ class Customer(StripeModel):
     id: str = Field(pattern=r"^cus_")
     object: Literal["customer"] = "customer"
     created: int
-    email: str
-    name: str
+    email: str | None = None
+    name: str | None = None
     metadata: dict[str, str] = Field(default_factory=dict)
 
 
