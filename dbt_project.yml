@@ -9,6 +9,10 @@ macro-paths: ["macros"]
 # Reason: pytest owns tests/, so dbt singular tests live in data_tests/
 test-paths: ["data_tests"]
 
+vars:
+  date_spine_start: '2023-01-01'
+  date_spine_end: '2027-12-31'
+
 clean-targets:
   - "target"
   - "dbt_packages"

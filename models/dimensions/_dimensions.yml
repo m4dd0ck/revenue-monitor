@@ -1,0 +1,22 @@
+version: 2
+
+models:
+  - name: dim_customer
+    description: One row per customer with firmographics from Stripe metadata.
+    columns:
+      - name: customer_id
+        data_tests: [unique, not_null]
+
+  - name: dim_plan
+    description: One row per price, with plan tier and a monthly-normalised seat price.
+    columns:
+      - name: price_id
+        data_tests: [unique, not_null]
+      - name: plan_tier
+        data_tests: [not_null]
+
+  - name: dim_date
+    description: Calendar spine, one row per day.
+    columns:
+      - name: date_day
+        data_tests: [unique, not_null]
