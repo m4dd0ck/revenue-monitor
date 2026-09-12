@@ -1,0 +1,15 @@
+version: 2
+
+sources:
+  - name: stripe
+    description: Raw Stripe objects as JSON payloads, loaded by `revmon load`.
+    schema: raw
+    tables:
+      - name: customers
+      - name: products
+      - name: prices
+      - name: subscriptions
+      - name: invoices
+      - name: charges
+      - name: refunds
+      - name: events
