@@ -20,3 +20,24 @@ models:
     columns:
       - name: date_day
         data_tests: [unique, not_null]
+
+  - name: dim_subscription_history
+    description: >
+      SCD Type 2 subscription history. valid_from is inclusive, valid_to exclusive; the current
+      version has a null valid_to.
+    columns:
+      - name: subscription_version_id
+        data_tests: [unique, not_null]
+      - name: subscription_id
+        data_tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('stg_stripe__subscriptions')
+                field: subscription_id
+      - name: status
+        data_tests:
+          - accepted_values:
+              arguments:
+                values: ['trialing', 'active', 'past_due', 'canceled', 'unpaid', 'incomplete',
+                         'incomplete_expired', 'paused']
