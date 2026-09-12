@@ -1,0 +1,67 @@
+version: 2
+
+models:
+  - name: stg_stripe__customers
+    description: One row per customer.
+    columns:
+      - name: customer_id
+        data_tests: [unique, not_null]
+
+  - name: stg_stripe__products
+    description: One row per product (plan tier).
+    columns:
+      - name: product_id
+        data_tests: [unique, not_null]
+
+  - name: stg_stripe__prices
+    description: One row per recurring price.
+    columns:
+      - name: price_id
+        data_tests: [unique, not_null]
+      - name: billing_interval
+        data_tests:
+          - accepted_values:
+              arguments:
+                values: ['month', 'year']
+
+  - name: stg_stripe__subscriptions
+    description: Current state of each subscription.
+    columns:
+      - name: subscription_id
+        data_tests: [unique, not_null]
+      - name: customer_id
+        data_tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('stg_stripe__customers')
+                field: customer_id
+
+  - name: stg_stripe__invoices
+    description: One row per invoice.
+    columns:
+      - name: invoice_id
+        data_tests: [unique, not_null]
+
+  - name: stg_stripe__charges
+    description: One row per payment attempt.
+    columns:
+      - name: charge_id
+        data_tests: [unique, not_null]
+      - name: charge_status
+        data_tests:
+          - accepted_values:
+              arguments:
+                values: ['succeeded', 'failed', 'pending']
+
+  - name: stg_stripe__refunds
+    description: One row per refund.
+    columns:
+      - name: refund_id
+        data_tests: [unique, not_null]
+
+  - name: stg_stripe__events
+    description: Subscription change events with full snapshots.
+    columns:
+      - name: event_id
+        data_tests: [unique, not_null]
