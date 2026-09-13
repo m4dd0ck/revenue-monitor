@@ -1,0 +1,29 @@
+version: 2
+
+models:
+  - name: fct_customer_mrr_monthly
+    description: >
+      One row per customer per month from their first subscription month onward. MRR is
+      measured at month end; movement columns are positive amounts of the one movement that
+      explains the change from starting to ending MRR.
+    columns:
+      - name: customer_month_id
+        data_tests: [unique, not_null]
+      - name: customer_id
+        data_tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('dim_customer')
+                field: customer_id
+      - name: movement_type
+        data_tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: ['new', 'expansion', 'contraction', 'churn', 'reactivation', 'none']
+      - name: churn_type
+        data_tests:
+          - accepted_values:
+              arguments:
+                values: ['voluntary', 'involuntary']
