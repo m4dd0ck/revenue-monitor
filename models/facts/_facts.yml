@@ -27,3 +27,23 @@ models:
           - accepted_values:
               arguments:
                 values: ['voluntary', 'involuntary']
+
+  - name: fct_invoices
+    description: One row per invoice.
+    columns:
+      - name: invoice_id
+        data_tests: [unique, not_null]
+      - name: invoice_status
+        data_tests:
+          - accepted_values:
+              arguments:
+                values: ['draft', 'open', 'paid', 'uncollectible', 'void']
+
+  - name: fct_payments
+    description: One row per charge attempt, refunds netted in.
+    columns:
+      - name: charge_id
+        data_tests: [unique, not_null]
+      - name: net_collected_cents
+        data_tests:
+          - not_null
