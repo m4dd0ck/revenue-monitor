@@ -25,16 +25,16 @@ from revenue_monitor.generator.lifecycle import (
 BASE_SIGNUPS_PER_MONTH = 25.0
 MONTHLY_GROWTH = 1.04
 TRIAL_CONVERSION = 0.55
-MONTHLY_CHURN = {"starter": 0.030, "growth": 0.020, "scale": 0.012}
-ANNUAL_RENEWAL_CHURN = 0.15
+MONTHLY_CHURN = {"starter": 0.022, "growth": 0.014, "scale": 0.008}
+ANNUAL_RENEWAL_CHURN = 0.12
 SWITCH_TO_ANNUAL = 0.005
-PAYMENT_FAILURE = 0.035
-PAYMENT_RECOVERY = 0.60
+PAYMENT_FAILURE = 0.025
+PAYMENT_RECOVERY = 0.70
 DUNNING_DAYS = 21
 REACTIVATION = 0.08
 # (change, probability) — at most one change per subscription per month
 MONTHLY_CHANGES = (
-    ("seats_up", 0.040),
+    ("seats_up", 0.050),
     ("seats_down", 0.020),
     ("upgrade", 0.015),
     ("downgrade", 0.008),
