@@ -1,0 +1,18 @@
+version: 2
+
+models:
+  - name: mart_mrr_bridge
+    description: Monthly MRR bridge in dollars with customer counts and retention rates.
+    columns:
+      - name: month
+        data_tests: [unique, not_null]
+
+  - name: mart_plan_summary
+    description: Paying customers, MRR and ARPA by plan tier and billing interval per month.
+    columns:
+      - name: plan_tier
+        data_tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: ['starter', 'growth', 'scale']
