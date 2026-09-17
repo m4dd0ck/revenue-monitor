@@ -16,3 +16,13 @@ models:
           - accepted_values:
               arguments:
                 values: ['starter', 'growth', 'scale']
+
+  - name: mart_cohort_retention
+    description: >
+      Logo and net revenue retention by first-paid-month cohort and months since start.
+      Month 0 is 100% by construction.
+    columns:
+      - name: cohort_month
+        data_tests: [not_null]
+      - name: logo_retention_pct
+        data_tests: [not_null]
