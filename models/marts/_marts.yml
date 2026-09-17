@@ -26,3 +26,27 @@ models:
         data_tests: [not_null]
       - name: logo_retention_pct
         data_tests: [not_null]
+
+  - name: mart_churn_analysis
+    description: Churned customers and MRR per month by churn type, tier and interval.
+    columns:
+      - name: churn_type
+        data_tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: ['voluntary', 'involuntary']
+
+  - name: mart_customer_health
+    description: >
+      One row per customer who has ever paid, as of the latest month. "At risk" means a
+      past-due subscription, two or more failed payments in 90 days, or a contraction in the
+      last three months.
+    columns:
+      - name: customer_id
+        data_tests: [unique, not_null]
+      - name: health_status
+        data_tests:
+          - accepted_values:
+              arguments:
+                values: ['healthy', 'at risk', 'churned']
