@@ -10,6 +10,12 @@ from rich.table import Table
 from revenue_monitor.config import Settings
 from revenue_monitor.generator import generate as run_generator
 from revenue_monitor.loader import load_raw
+from revenue_monitor.metrics import (
+    COLUMN_LABELS,
+    DEFAULT_METRICS,
+    format_value,
+    monthly_metrics,
+)
 from revenue_monitor.stripe_source import LiveKeyError, extract, require_test_key
 
 app = typer.Typer(
@@ -73,3 +79,25 @@ def stripe() -> None:
         raise typer.BadParameter("Install the extra: uv sync --extra stripe") from error
     counts = extract(stripe_sdk.StripeClient(api_key).v1, settings.raw_dir)
     print_counts("Pulled from Stripe", counts, str(settings.raw_dir))
+
+
+@app.command()
+def metrics(
+    names: Annotated[
+        str, typer.Option("--metrics", help="Comma-separated metric names.")
+    ] = ",".join(DEFAULT_METRICS),
+    last: Annotated[int, typer.Option(help="Trailing months to show.", min=1)] = 12,
+) -> None:
+    """Show monthly revenue metrics from the MetricForge definitions."""
+    settings = Settings()
+    metric_names = [name.strip() for name in names.split(",") if name.strip()]
+    rows = monthly_metrics(settings.metrics_dir, settings.db_path, metric_names, last)
+
+    table = Table(title="Revenue metrics", caption=f"MetricForge · {settings.metrics_dir}")
+    table.add_column("Month")
+    for name in metric_names:
+        table.add_column(COLUMN_LABELS.get(name, name), justify="right")
+    for row in rows:
+        month = row["month"].strftime("%Y-%m")
+        table.add_row(month, *(format_value(name, row[name]) for name in metric_names))
+    console.print(table)
