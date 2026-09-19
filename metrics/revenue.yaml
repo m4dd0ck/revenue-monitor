@@ -1,0 +1,169 @@
+# Revenue metrics for MetricForge, all computed from one table so any combination can be
+# queried together (MetricForge compiles single-table queries).
+#
+# Naming: derived metrics substitute referenced metric names by plain text replacement, so no
+# metric name may appear inside a column name. That is why MRR is `total_mrr`, not `mrr`.
+
+semantic_models:
+  - name: customer_mrr_monthly
+    description: "One row per customer per month; MRR measured at month end"
+    table: facts.fct_customer_mrr_monthly
+    primary_entity: customer_month_id
+
+    entities:
+      - name: customer_month_id
+        type: primary
+      - name: customer_id
+        type: foreign
+
+    measures:
+      - name: ending_mrr
+        agg: sum
+        expr: ending_mrr_cents / 100.0
+        description: "MRR at month end, USD"
+      - name: starting_mrr
+        agg: sum
+        expr: starting_mrr_cents / 100.0
+        description: "MRR at the end of the previous month, USD"
+      - name: new_mrr
+        agg: sum
+        expr: new_mrr_cents / 100.0
+      - name: expansion_mrr
+        agg: sum
+        expr: expansion_mrr_cents / 100.0
+      - name: contraction_mrr
+        agg: sum
+        expr: contraction_mrr_cents / 100.0
+      - name: churned_mrr
+        agg: sum
+        expr: churned_mrr_cents / 100.0
+      - name: reactivation_mrr
+        agg: sum
+        expr: reactivation_mrr_cents / 100.0
+      - name: net_new_mrr
+        agg: sum
+        expr: net_new_mrr_cents / 100.0
+      - name: retained_mrr
+        agg: sum
+        expr: retained_mrr_cents / 100.0
+        description: "Month-end MRR from customers who were paying at month start"
+      - name: customer_count
+        agg: count_distinct
+        expr: customer_id
+
+    dimensions:
+      - name: month
+        type: time
+        expr: month
+        time_granularity: month
+      - name: plan_tier
+        type: categorical
+      - name: billing_interval
+        type: categorical
+      - name: movement_type
+        type: categorical
+      - name: churn_type
+        type: categorical
+
+metrics:
+  - name: total_mrr
+    description: "Monthly recurring revenue at month end"
+    type: simple
+    type_params:
+      measure: ending_mrr
+
+  - name: arr
+    description: "Annual run rate, MRR x 12"
+    type: derived
+    type_params:
+      expr: "total_mrr * 12"
+      metrics: [total_mrr]
+
+  - name: starting_mrr_total
+    type: simple
+    type_params:
+      measure: starting_mrr
+
+  - name: new_mrr_total
+    type: simple
+    type_params:
+      measure: new_mrr
+
+  - name: expansion_mrr_total
+    type: simple
+    type_params:
+      measure: expansion_mrr
+
+  - name: contraction_mrr_total
+    type: simple
+    type_params:
+      measure: contraction_mrr
+
+  - name: churned_mrr_total
+    type: simple
+    type_params:
+      measure: churned_mrr
+
+  - name: reactivation_mrr_total
+    type: simple
+    type_params:
+      measure: reactivation_mrr
+
+  - name: net_new_mrr_total
+    description: "Change in MRR over the month"
+    type: simple
+    type_params:
+      measure: net_new_mrr
+
+  - name: retained_mrr_total
+    type: simple
+    type_params:
+      measure: retained_mrr
+
+  - name: paying_customers
+    description: "Customers with MRR at month end"
+    type: simple
+    type_params:
+      measure: customer_count
+    filter: "ending_mrr_cents > 0"
+
+  - name: starting_customers
+    description: "Customers with MRR at the start of the month"
+    type: simple
+    type_params:
+      measure: customer_count
+    filter: "starting_mrr_cents > 0"
+
+  - name: churned_customers
+    type: simple
+    type_params:
+      measure: customer_count
+    filter: "movement_type = 'churn'"
+
+  - name: arpa
+    description: "Average revenue per paying account"
+    type: derived
+    type_params:
+      expr: "total_mrr / paying_customers"
+      metrics: [total_mrr, paying_customers]
+
+  - name: logo_churn_rate
+    description: "Share of starting customers lost in the month"
+    type: ratio
+    type_params:
+      numerator: churned_customers
+      denominator: starting_customers
+
+  - name: gross_mrr_churn_rate
+    description: "Churned MRR as a share of starting MRR (excludes contraction)"
+    type: ratio
+    type_params:
+      numerator: churned_mrr_total
+      denominator: starting_mrr_total
+
+  - name: net_revenue_retention
+    description: "Month-end MRR from starting customers over starting MRR"
+    type: ratio
+    type_params:
+      numerator: retained_mrr_total
+      denominator: starting_mrr_total
