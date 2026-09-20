@@ -1,0 +1,5 @@
+# Path is relative to this directory. Evidence opens the file read-only.
+name: warehouse
+type: duckdb
+options:
+  filename: ../../../data/revenue_monitor.duckdb
