@@ -1,5 +1,6 @@
 ---
 title: MRR Bridge
+sidebar_position: 1
 ---
 
 How MRR moved each month. Starting MRR plus new, expansion and reactivation, minus contraction
