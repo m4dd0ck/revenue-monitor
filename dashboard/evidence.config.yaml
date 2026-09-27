@@ -66,3 +66,7 @@ plugins:
 
   datasources:
     "@evidence-dev/duckdb": {}
+
+# Served from https://m4dd0ck.github.io/revenue-monitor (GitHub Pages project site).
+deployment:
+  basePath: /revenue-monitor
