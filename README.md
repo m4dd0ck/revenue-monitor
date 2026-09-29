@@ -9,6 +9,9 @@ change into an MRR bridge. The same numbers are defined as metrics in
 [MetricForge](https://github.com/m4dd0ck/metricforge) and shown in an Evidence dashboard.
 Everything runs locally with no accounts. A Stripe test-mode loader is included for real API data.
 
+**Live dashboard: [m4dd0ck.github.io/revenue-monitor](https://m4dd0ck.github.io/revenue-monitor/)**
+(rebuilt from the seed by GitHub Actions on every push; filters and charts run in your browser)
+
 ![Overview](assets/overview.png)
 
 ## Stack
@@ -133,7 +136,7 @@ Needs Python 3.12+, [uv](https://github.com/astral-sh/uv) and Node 18+.
 make build            # uv sync + npm ci
 make all              # generate → load → dbt build → dashboard sources (~10s)
 make metrics          # MetricForge metrics in the terminal
-make dashboard-dev    # Evidence at http://localhost:3000
+make dashboard-dev    # Evidence at http://localhost:3000/revenue-monitor
 ```
 
 Or step by step:
