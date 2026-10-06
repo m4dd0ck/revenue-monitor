@@ -154,11 +154,18 @@ metrics:
       numerator: churned_customers
       denominator: starting_customers
 
+  - name: lost_mrr_total
+    description: "MRR lost in the month: churned plus contraction"
+    type: derived
+    type_params:
+      expr: "churned_mrr_total + contraction_mrr_total"
+      metrics: [churned_mrr_total, contraction_mrr_total]
+
   - name: gross_mrr_churn_rate
-    description: "Churned MRR as a share of starting MRR (excludes contraction)"
+    description: "Churned plus contraction MRR as a share of starting MRR, as in mart_mrr_bridge"
     type: ratio
     type_params:
-      numerator: churned_mrr_total
+      numerator: lost_mrr_total
       denominator: starting_mrr_total
 
   - name: net_revenue_retention

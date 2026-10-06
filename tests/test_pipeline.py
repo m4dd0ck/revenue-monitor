@@ -79,3 +79,20 @@ def test_metricforge_mrr_matches_bridge_mart(built_warehouse: Path) -> None:
     )[0]
     assert latest["total_mrr"] == pytest.approx(mart_mrr, abs=0.01)
     assert latest["paying_customers"] == mart_customers
+
+
+@pytest.mark.integration
+def test_metricforge_gross_churn_matches_bridge_mart(built_warehouse: Path) -> None:
+    # Reason: the README and dashboard define gross revenue churn as (churned + contraction)
+    # over starting MRR; the YAML metric must agree or the CLI prints a different number.
+    with duckdb.connect(str(built_warehouse), read_only=True) as connection:
+        row = connection.execute(
+            "select gross_mrr_churn_pct from marts.mart_mrr_bridge order by month desc limit 1"
+        ).fetchone()
+    assert row is not None
+    mart_rate = row[0] / 100
+
+    latest = monthly_metrics(
+        PROJECT_ROOT / "metrics", built_warehouse, ["gross_mrr_churn_rate"], 1
+    )[0]
+    assert latest["gross_mrr_churn_rate"] == pytest.approx(mart_rate, abs=0.0001)
