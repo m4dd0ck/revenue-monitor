@@ -881,7 +881,7 @@ wheels = [
 [[package]]
 name = "metricforge"
 version = "0.1.0"
-source = { git = "https://github.com/m4dd0ck/metricforge#27a953ef60b1fc14fc0e166b95e7484811c9c1ec" }
+source = { git = "https://github.com/m4dd0ck/metricforge?rev=v0.1.0#27a953ef60b1fc14fc0e166b95e7484811c9c1ec" }
 dependencies = [
     { name = "duckdb" },
     { name = "pydantic" },
@@ -1514,7 +1514,7 @@ requires-dist = [
     { name = "dbt-core", specifier = ">=1.10" },
     { name = "dbt-duckdb", specifier = ">=1.9" },
     { name = "duckdb", specifier = ">=1.4" },
-    { name = "metricforge", git = "https://github.com/m4dd0ck/metricforge" },
+    { name = "metricforge", git = "https://github.com/m4dd0ck/metricforge?rev=v0.1.0" },
     { name = "pydantic", specifier = ">=2.9" },
     { name = "pydantic-settings", specifier = ">=2.5" },
     { name = "rich", specifier = ">=13" },
