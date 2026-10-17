@@ -5,21 +5,25 @@ on:
     branches: [main]
   pull_request:
     branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
 
 jobs:
   lint-test:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - name: Install uv
-        uses: astral-sh/setup-uv@v4
+        uses: astral-sh/setup-uv@v10.3.0
 
       - name: Set up Python
         run: uv python install 3.12
 
       - name: Install dependencies
-        run: uv sync
+        run: uv sync --locked
 
       - name: Lint
         run: |
@@ -33,16 +37,16 @@ jobs:
   pipeline:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - name: Install uv
-        uses: astral-sh/setup-uv@v4
+        uses: astral-sh/setup-uv@v10.3.0
 
       - name: Set up Python
         run: uv python install 3.12
 
       - name: Set up Node
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v7
         with:
           node-version: 20
           cache: npm
@@ -50,9 +54,10 @@ jobs:
 
       - name: Install dependencies
         run: |
-          uv sync
+          uv sync --locked
           cd dashboard && npm ci
 
+      # Seeded synthetic data, so the site needs no secrets and rebuilds identically.
       - name: Generate and load
         run: |
           uv run revmon generate
@@ -72,3 +77,28 @@ jobs:
           cd dashboard
           npm run sources
           npm run build:strict
+
+      - name: Upload Pages artifact
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        uses: actions/upload-pages-artifact@v5
+        with:
+          path: dashboard/build
+
+  # Publishes only after lint, unit and pipeline jobs pass, so a red build never ships.
+  deploy:
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    needs: [lint-test, pipeline]
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
+    # One deploy at a time; a newer push replaces a queued one.
+    concurrency:
+      group: pages
+      cancel-in-progress: true
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v5
