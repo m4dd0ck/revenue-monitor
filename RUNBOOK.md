@@ -29,12 +29,9 @@ make test
 
 1. Change the tag in `pyproject.toml` (`metricforge @ git+...@vX.Y.Z`); `uv lock`.
 2. `make lint && make test-all`.
-3. Commit `chore(deps): Pin metricforge to vX.Y.Z`; do the same in metric-helpdesk and update
-   the version recorded for metricforge in hq (`~/developer/hq/repos.json`).
+3. Commit `chore(deps): Pin metricforge to vX.Y.Z`; do the same in metric-helpdesk.
 
 ## Release
-
-Conventions in `~/developer/hq/CONVENTIONS.md` §Versioning.
 
 1. Bump `version` in `pyproject.toml` and `__version__` in `src/revenue_monitor/__init__.py` to
    the same value; `uv lock`.
@@ -53,7 +50,7 @@ run: read the Actions log. If Pages was never enabled, set the source to "GitHub
 
 ## Restore on a new machine
 
-1. Clone `git@github.com:m4dd0ck/revenue-monitor.git`; install Node 18+; `make build`.
+1. Clone `https://github.com/m4dd0ck/revenue-monitor.git`; install Node 18+; `make build`.
 2. `make all`. No secrets: the data is generated. `STRIPE_API_KEY` is only for the optional
    test-mode pull.
 
@@ -64,5 +61,4 @@ make lint
 make test-all
 make dbt
 make dashboard-build
-python3 ~/.claude/scripts/doc-check.py --repo .
 ```

@@ -83,27 +83,22 @@ edit the help strings in `src/revenue_monitor/cli.py`, not this table.
 | `revmon load` | Load raw JSONL into the DuckDB raw schema. |
 | `revmon stripe` | Pull objects from a Stripe test-mode account (needs STRIPE_API_KEY). |
 | `revmon metrics` | Show monthly revenue metrics from the MetricForge definitions. |
-| `make build` |  |
-| `make generate` |  |
-| `make load` |  |
-| `make dbt` |  |
-| `make metrics` |  |
-| `make all` |  |
-| `make test` |  |
-| `make test-all` |  |
-| `make lint` |  |
-| `make dashboard-sources` |  |
-| `make dashboard-dev` |  |
-| `make dashboard-build` |  |
-| `make clean` |  |
+| `make build` | Install the Python and Node dependencies |
+| `make generate` | Generate the synthetic Stripe-shaped data |
+| `make load` | Load the generated data into DuckDB |
+| `make dbt` | Build the dbt models |
+| `make metrics` | Print the MetricForge metrics table |
+| `make all` | The four pipeline steps in order, from nothing to dashboard data |
+| `make test` | Unit tests |
+| `make test-all` | Unit tests plus the end-to-end pipeline test |
+| `make lint` | ruff and mypy |
+| `make dashboard-sources` | Export the marts for Evidence |
+| `make dashboard-dev` | Serve Evidence locally |
+| `make dashboard-build` | Build the dashboard strictly, as CI does |
+| `make clean` | Delete the generated data, warehouse, dbt artifacts and dashboard build |
 <!-- generated:commands end -->
 
-Make targets, in pipeline order: `build` installs Python and Node dependencies; `generate`,
-`load`, `dbt` and `dashboard-sources` are the four pipeline steps and `all` runs them in
-order; `metrics` prints the MetricForge table; `dashboard-dev` serves Evidence locally and
-`dashboard-build` builds it strictly as CI does; `test` runs the unit tests, `test-all` adds
-the end-to-end pipeline test, `lint` runs ruff and mypy; `clean` deletes the generated data,
-warehouse, dbt artifacts and dashboard build.
+`make all` runs `generate`, `load`, `dbt` and `dashboard-sources` in that order.
 
 `revmon generate` takes `--seed`, `--start` and `--end` (same seed, same data). `revmon metrics`
 takes `--last N` months and `--metrics` as a comma-separated list. Paths come from
@@ -273,7 +268,7 @@ Not in git: `data/` (raw JSONL and the warehouse), dbt artifacts, the Evidence b
 
 | Thing | Where | Notes |
 |---|---|---|
-| MetricForge | [m4dd0ck/metricforge](https://github.com/m4dd0ck/metricforge), pinned by git tag in `pyproject.toml` | the tag in force is recorded in hq (`~/developer/hq/repos.json`); metric-helpdesk pins the same tag, bump both together |
+| MetricForge | [m4dd0ck/metricforge](https://github.com/m4dd0ck/metricforge), pinned by git tag in `pyproject.toml` | metric-helpdesk pins the same tag; bump both together |
 | Live dashboard | GitHub Pages for this repo | deployed by `ci.yml` only after lint, unit and pipeline jobs pass |
 | Stripe test mode | `STRIPE_API_KEY` in the environment or `.env` | optional; test-mode keys only |
 
@@ -319,7 +314,6 @@ excluded from a plain `pytest` run.
 - `RUNBOOK.md`: on open, on close, rebuild, release, deploy, restore.
 - `CLAUDE.md`: rules for agents working here.
 - `TASK.md`: what is open.
-- `~/developer/hq/CONVENTIONS.md`: release and commit conventions across the owner's repos.
 
 ## License
 
